@@ -1,0 +1,7 @@
+getTotalPnL()
+
+getCurrentBalance()
+
+getWinningTrades()
+
+getLosingTrades()
