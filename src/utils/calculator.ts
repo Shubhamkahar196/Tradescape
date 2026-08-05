@@ -1,86 +1,123 @@
-import { DAILY_LOSS_LIMIT, MAX_DRAWDOWN, STARTING_BALANCE, Trade } from "@/data/trades"
 
-export const getTotalPnL=(trades: Trade[]):number=>{
-   return trades.reduce((sum,trade)=>sum+trade.pnl,0)
+import type { Trade } from "@/types/trade"
+
+  export interface RiskResult {
+  status: "Safe" | "Approaching Limit" | "At Risk";
+  color: string;
+}
+export const getTotalPnL = (trades: Trade[]): number => {
+  return trades.reduce((sum, trade) => sum + trade.pnl, 0)
 }
 
-export const getCurrentBalance=(STARTING_BALANCE:number,trades:Trade[]):number=>{
-return STARTING_BALANCE + getTotalPnL(trades);
+export const getCurrentBalance = (
+   startingBalance: number,
+  trades: Trade[]
+): number => {
+  return startingBalance + getTotalPnL(trades);
 }
 
-export const getWinningTrades=(trades:Trade[]):number=>{
-    return trades.filter((trade)=> trade.pnl > 0).length;
+export const getWinningTrades = (trades: Trade[]): number => {
+  return trades.filter((trade) => trade.pnl > 0).length
 }
 
-export const getLosingTrades = (trades:Trade[]):number=>{
-    return trades.filter(trade=>trade.pnl <0).length;
+export const getLosingTrades = (trades: Trade[]): number => {
+  return trades.filter((trade) => trade.pnl < 0).length
 }
 
-export const getWinRate =(trades:Trade[]):number=>{
-    if(trades.length===0) return 0;
-    const wins = getWinningTrades(trades);
-return Number(((wins/trades.length)*100).toFixed(2));
+export const getWinRate = (trades: Trade[]): number => {
+  if (trades.length === 0) return 0
+  const wins = getWinningTrades(trades)
+  return Number(((wins / trades.length) * 100).toFixed(2))
 }
 
-export const getLargestWinningTrade =(trades:Trade[]):number=>{
-    const winningTrades = trades.filter((trade)=> trade.pnl > 0);
-    if(winningTrades.length===0) return 0;
-    return Math.max(...winningTrades.map((trade)=>trade.pnl));
+export const getLargestWinningTrade = (trades: Trade[]): number => {
+  const winningTrades = trades.filter((trade) => trade.pnl > 0)
+  if (winningTrades.length === 0) return 0
+  return Math.max(...winningTrades.map((trade) => trade.pnl))
 }
 
-export const getLargestLosingTrade =(trades:Trade[]):number =>{
-    const losingTrades = trades.filter((trade)=> trade.pnl <0);
-    if(losingTrades.length ===0) return 0;
-    return Math.min(...losingTrades.map((trade)=>trade.pnl));
+export const getLargestLosingTrade = (trades: Trade[]): number => {
+  const losingTrades = trades.filter((trade) => trade.pnl < 0)
+  if (losingTrades.length === 0) return 0
+  return Math.min(...losingTrades.map((trade) => trade.pnl))
 }
 
-
-// current drawdown 
+// current drawdown
 // drawdown = Starting balance - current balance
 
 export const getCurrentDrawdown = (
-    STARTING_BALANCE:number,
-    trades: Trade[]
+  startingBalance: number,
+  trades: Trade[]
 ): number => {
-    const currentBalance = getCurrentBalance(STARTING_BALANCE,trades);
-    return Math.max(0,STARTING_BALANCE-currentBalance);
-}
+  const currentBalance = getCurrentBalance(
+    startingBalance,
+    trades
+  );
 
+  return Math.max(0, startingBalance - currentBalance);
+};
 
 // Remaining drawdown
 
 export const getRemainingDrawdown = (
-    MAX_DRAWDOWN:number,
-    CurrentDrawdown:number
-):number =>{
-    return Math.max(0,MAX_DRAWDOWN- CurrentDrawdown);
-}
-
+  maxDrawdown: number,
+  currentDrawdown: number
+): number => {
+  return Math.max(0, maxDrawdown - currentDrawdown);
+};
 
 //current daily loss
-export const getCurrentDayLoss = (trades:Trade[]): number=>{
-    return trades.filter((trade)=> trade.pnl < 0).reduce((sum,trade)=> sum + Math.abs(trade.pnl),0);
-}
+export const getCurrentDayLoss = (
+  trades: Trade[]
+): number => {
+  return trades
+    .filter((trade) => trade.pnl < 0)
+    .reduce((sum, trade) => sum + Math.abs(trade.pnl), 0);
+};
 
 // Remaining daily loss limit
 
-export const getRemaininDailyLoss = (
-    DAILY_LOSS_LIMIT: number,
-    currentDayLoss: number
-): number =>{
-    return Math.max(0,DAILY_LOSS_LIMIT- currentDayLoss);
-}
+export const getRemainingDailyLoss = (
+  dailyLossLimit: number,
+  currentDayLoss: number
+): number => {
+  return Math.max(0, dailyLossLimit - currentDayLoss);
+};
 
 // risk status
 export const getRiskStatus = (
   remainingDrawdown: number,
-  maxDrawdown: number
-): "Safe" | "Approaching Limit" | "At Risk" => {
-  const percentage = (remainingDrawdown / maxDrawdown) * 100;
+  maxDrawdown: number,
+  remainingDailyLoss: number,
+  dailyLossLimit: number
+): RiskResult => {
+  const drawdownPercent =
+    (remainingDrawdown / maxDrawdown) * 100;
 
-  if (percentage > 70) return "Safe";
+  const dailyLossPercent =
+    (remainingDailyLoss / dailyLossLimit) * 100;
 
-  if (percentage > 30) return "Approaching Limit";
+  const lowestRemaining = Math.min(
+    drawdownPercent,
+    dailyLossPercent
+  );
 
-  return "At Risk";
+  if (lowestRemaining > 70) {
+    return {
+      status: "Safe",
+      color: "green",
+    };
+  }
+
+  if (lowestRemaining > 30) {
+    return {
+      status: "Approaching Limit",
+      color: "orange",
+    };
+  }
+
+  return {
+    status: "At Risk",
+    color: "red",
+  };
 };
