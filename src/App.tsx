@@ -1,10 +1,11 @@
+import Dashboard from "./components/dashboard/Dashboard"
 
 
 export function App() {
   return (
-    <div>
-      <h1 className="">Tradescape</h1>
-    </div>
+    <main className="min-h-screen ">
+      <Dashboard/>
+    </main>
   )
 }
 
