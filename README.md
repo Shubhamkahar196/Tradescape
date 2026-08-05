@@ -12,15 +12,17 @@ The dashboard helps traders quickly understand their trading performance and det
 
 ---
 
-## 📂 GitHub Repository
+##  GitHub Repository
 
 https://github.com/Shubhamkahar196/Tradescape.git
 
 ---
 
 #  Preview
+<img width="1912" height="932" alt="trade" src="https://github.com/user-attachments/assets/6cdf406e-7389-4fb5-95b9-51722831d68e" />
+<img width="1911" height="926" alt="trades" src="https://github.com/user-attachments/assets/68a09ade-6afb-4366-88cb-6b852e2153f4" />
 
-> Add screenshots here after deployment.
+
 
 ---
 
@@ -267,6 +269,35 @@ I would add:
 - Focused on readability, maintainability, and clean architecture.
 
 ---
+ #  References
+
+While building this project, I referred to the following resources to better understand trading concepts, dashboard design, and the technologies used:
+
+## Trading Concepts
+
+- Investopedia – Drawdown  
+  https://www.investopedia.com/terms/d/drawdown.asp
+
+- Investopedia – Risk Management  
+  https://www.investopedia.com/terms/r/riskmanagement.asp
+
+## React & UI
+
+- React Documentation  
+  https://react.dev/
+
+- shadcn/ui Documentation  
+  https://ui.shadcn.com/
+
+- Recharts Documentation  
+  https://recharts.org/
+
+## Product & Dashboard Design
+
+- Nielsen Norman Group (Dashboard & UX Articles)  
+  https://www.nngroup.com/
+
+
 
 #  License
 
